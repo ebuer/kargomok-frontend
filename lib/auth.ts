@@ -91,8 +91,8 @@ export const authOptions: NextAuthOptions = {
         },
     },
     pages: {
-        signIn: "/login",
-        error: "/login",
+        signIn: "/giris",
+        error: "/giris",
     },
     debug: process.env.NODE_ENV === "development",
 };

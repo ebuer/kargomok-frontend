@@ -133,7 +133,7 @@ const LoginForm = () => {
             <p className="mt-4 text-center text-sm text-gray-600">
                 Hesabınız yok mu?{" "}
                 <Link
-                    href="/register"
+                    href="/kayit"
                     className="text-blue-600 hover:underline"
                     tabIndex={0}
                     aria-label="Kayıt ol sayfasına git"
@@ -145,7 +145,7 @@ const LoginForm = () => {
     );
 };
 
-export default function LoginPage() {
+export default function GirisPage() {
     return (
         <main className="min-h-screen flex items-center justify-center p-4">
             <Suspense fallback={<div className="text-center">Yükleniyor...</div>}>

@@ -1,18 +1,10 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 import { serverApi, UnauthorizedError } from "@/lib/api";
 import type { MeResponse } from "@/lib/types/auth";
 import { DashboardClient } from "@/components/DashboardClient";
 import Link from "next/link";
 
 export default async function DashboardPage() {
-    const session = await getServerSession(authOptions);
-
-    if (!session) {
-        redirect("/login");
-    }
-
     let serverUser = null;
     let serverError = null;
 
@@ -24,7 +16,7 @@ export default async function DashboardPage() {
         }
     } catch (error) {
         if (error instanceof UnauthorizedError) {
-            redirect("/login");
+            redirect("/giris");
         }
         serverError = "Kullanıcı bilgileri alınamadı";
     }

@@ -8,7 +8,7 @@ import { registerRequestSchema, type RegisterRequest } from "@/lib/schema/auth";
 import { register } from "@/lib/services/auth";
 import { ZodError } from "zod";
 
-export default function RegisterPage() {
+export default function KayitPage() {
     const router = useRouter();
 
     const [formData, setFormData] = useState<RegisterRequest>({
@@ -62,8 +62,7 @@ export default function RegisterPage() {
 
         if (signInResult?.error) {
             // Registration was successful but auto sign-in failed
-            // Redirect to login page
-            router.push("/login?registered=true");
+            router.push("/giris?registered=true");
             return;
         }
 
@@ -191,7 +190,7 @@ export default function RegisterPage() {
                 <p className="mt-4 text-center text-sm text-gray-600">
                     Zaten hesabınız var mı?{" "}
                     <Link
-                        href="/login"
+                        href="/giris"
                         className="text-blue-600 hover:underline"
                         tabIndex={0}
                         aria-label="Giriş yap sayfasına git"

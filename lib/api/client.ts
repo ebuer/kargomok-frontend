@@ -39,7 +39,7 @@ clientApi.interceptors.response.use(
     async (error) => {
         if (error.response?.status === 401) {
             // Sign out and redirect to login on 401
-            await signOut({ callbackUrl: "/login" });
+            await signOut({ callbackUrl: "/giris" });
         }
         return Promise.reject(error);
     }

@@ -4,8 +4,13 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { UserPlus } from "lucide-react";
 import { registerRequestSchema, type RegisterRequest } from "@/lib/schema/auth";
 import { register } from "@/lib/services/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ZodError } from "zod";
 
 export default function KayitPage() {
@@ -30,7 +35,6 @@ export default function KayitPage() {
         setErrors([]);
         setIsLoading(true);
 
-        // Validate with Zod
         try {
             registerRequestSchema.parse(formData);
         } catch (error) {
@@ -41,17 +45,15 @@ export default function KayitPage() {
             }
         }
 
-        // Register with Laravel API
         const result = await register(formData);
 
         if (!result.success) {
-            const errorMessages = result.errors || [result.message];
+            const errorMessages = result.errors ?? [result.message];
             setErrors(errorMessages);
             setIsLoading(false);
             return;
         }
 
-        // Auto sign-in after successful registration
         const signInResult = await signIn("credentials", {
             email: formData.email,
             password: formData.password,
@@ -61,7 +63,6 @@ export default function KayitPage() {
         setIsLoading(false);
 
         if (signInResult?.error) {
-            // Registration was successful but auto sign-in failed
             router.push("/giris?registered=true");
             return;
         }
@@ -73,132 +74,170 @@ export default function KayitPage() {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-6 text-center">Kayıt Ol</h1>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {errors.length > 0 && (
-                        <div className="p-3 border border-red-300 bg-red-50 rounded text-red-700 text-sm">
-                            <ul className="list-disc list-inside">
-                                {errors.map((error, index) => (
-                                    <li key={index}>{error}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-
+        <div className="flex min-h-screen">
+            <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+                <div className="mx-auto w-full max-w-sm lg:w-96">
                     <div>
-                        <label
-                            htmlFor="name"
-                            className="block text-sm font-medium mb-1"
+                        <Link
+                            href="/"
+                            className="flex items-center gap-2"
+                            aria-label="Ana sayfa"
                         >
-                            İsim
-                        </label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Adınız Soyadınız"
-                            required
-                            disabled={isLoading}
-                            aria-label="İsim"
-                            tabIndex={0}
-                        />
+                            <Image
+                                src="/images/logo/default.png"
+                                alt="Kargomok"
+                                width={40}
+                                height={40}
+                                className="h-10 w-auto shrink-0"
+                            />
+                        </Link>
+                        <h2 className="mt-8 text-2xl font-bold tracking-tight text-foreground">
+                            Hesap oluşturun
+                        </h2>
+                        <p className="mt-2 text-sm text-muted-foreground">
+                            Zaten hesabınız var mı?{" "}
+                            <Link
+                                href="/giris"
+                                className="font-semibold text-primary hover:text-primary/90"
+                                tabIndex={0}
+                                aria-label="Giriş yap sayfasına git"
+                            >
+                                Giriş yapın
+                            </Link>
+                        </p>
                     </div>
 
-                    <div>
-                        <label
-                            htmlFor="email"
-                            className="block text-sm font-medium mb-1"
-                        >
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="ornek@email.com"
-                            required
-                            disabled={isLoading}
-                            aria-label="Email adresi"
-                            tabIndex={0}
-                        />
+                    <div className="mt-10">
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            {errors.length > 0 && (
+                                <div
+                                    className="rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive"
+                                    role="alert"
+                                >
+                                    <ul className="list-disc list-inside space-y-0.5">
+                                        {errors.map((error, index) => (
+                                            <li key={index}>{error}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <Label htmlFor="name" className="text-foreground">
+                                    İsim
+                                </Label>
+                                <Input
+                                    id="name"
+                                    name="name"
+                                    type="text"
+                                    autoComplete="name"
+                                    placeholder="Adınız Soyadınız"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={isLoading}
+                                    aria-invalid={errors.length > 0}
+                                    aria-label="İsim"
+                                    className="h-10"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="email"
+                                    className="text-foreground"
+                                >
+                                    E-posta adresi
+                                </Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    autoComplete="email"
+                                    placeholder="ornek@email.com"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={isLoading}
+                                    aria-invalid={errors.length > 0}
+                                    aria-label="E-posta adresi"
+                                    className="h-10"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="password"
+                                    className="text-foreground"
+                                >
+                                    Şifre
+                                </Label>
+                                <Input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="••••••••"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={isLoading}
+                                    aria-invalid={errors.length > 0}
+                                    aria-label="Şifre"
+                                    className="h-10"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label
+                                    htmlFor="password_confirmation"
+                                    className="text-foreground"
+                                >
+                                    Şifre onayı
+                                </Label>
+                                <Input
+                                    id="password_confirmation"
+                                    name="password_confirmation"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    placeholder="••••••••"
+                                    value={formData.password_confirmation}
+                                    onChange={handleChange}
+                                    required
+                                    disabled={isLoading}
+                                    aria-invalid={errors.length > 0}
+                                    aria-label="Şifre onayı"
+                                    className="h-10"
+                                />
+                            </div>
+
+                            <Button
+                                type="submit"
+                                disabled={isLoading}
+                                className="h-10 w-full font-semibold"
+                                aria-label="Kayıt ol butonu"
+                            >
+                                {isLoading ? (
+                                    "Kayıt yapılıyor..."
+                                ) : (
+                                    <>
+                                        <UserPlus className="size-4" aria-hidden />
+                                        Kayıt ol
+                                    </>
+                                )}
+                            </Button>
+                        </form>
                     </div>
-
-                    <div>
-                        <label
-                            htmlFor="password"
-                            className="block text-sm font-medium mb-1"
-                        >
-                            Şifre
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="••••••••"
-                            required
-                            disabled={isLoading}
-                            aria-label="Şifre"
-                            tabIndex={0}
-                        />
-                    </div>
-
-                    <div>
-                        <label
-                            htmlFor="password_confirmation"
-                            className="block text-sm font-medium mb-1"
-                        >
-                            Şifre Onayı
-                        </label>
-                        <input
-                            type="password"
-                            id="password_confirmation"
-                            name="password_confirmation"
-                            value={formData.password_confirmation}
-                            onChange={handleChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="••••••••"
-                            required
-                            disabled={isLoading}
-                            aria-label="Şifre onayı"
-                            tabIndex={0}
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full py-2 px-4 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        tabIndex={0}
-                        aria-label="Kayıt ol butonu"
-                    >
-                        {isLoading ? "Kayıt yapılıyor..." : "Kayıt Ol"}
-                    </button>
-                </form>
-
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    Zaten hesabınız var mı?{" "}
-                    <Link
-                        href="/giris"
-                        className="text-blue-600 hover:underline"
-                        tabIndex={0}
-                        aria-label="Giriş yap sayfasına git"
-                    >
-                        Giriş Yap
-                    </Link>
-                </p>
+                </div>
             </div>
-        </main>
+
+            <div className="relative hidden w-0 flex-1 lg:block">
+                <img
+                    alt=""
+                    src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1908&q=80"
+                    className="absolute inset-0 size-full object-cover"
+                />
+            </div>
+        </div>
     );
 }

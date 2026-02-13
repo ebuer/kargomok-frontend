@@ -20,3 +20,9 @@ export const registerRequestSchema = z
     });
 
 export type RegisterRequest = z.infer<typeof registerRequestSchema>;
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email("Geçerli bir email adresi giriniz"),
+});
+
+export type ForgotPasswordRequest = z.infer<typeof forgotPasswordSchema>;

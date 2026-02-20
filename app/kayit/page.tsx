@@ -68,7 +68,7 @@ export default function KayitPage() {
         }
 
         if (signInResult?.ok) {
-            router.push("/dashboard");
+            router.push("/");
             router.refresh();
         }
     };

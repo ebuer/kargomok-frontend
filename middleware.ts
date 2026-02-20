@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   if (isPublicAuthPath(pathname)) {
     if (isAuthenticated) {
       const url = request.nextUrl.clone();
-      url.pathname = "/dashboard";
+      url.pathname = "/";
       return NextResponse.redirect(url);
     }
     return NextResponse.next();

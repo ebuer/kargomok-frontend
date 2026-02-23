@@ -1,17 +1,19 @@
 import { redirect } from "next/navigation";
 import { serverApi, UnauthorizedError } from "@/lib/api";
-import type { MeResponse } from "@/lib/types/auth";
+import type { ApiUser } from "@/lib/types/auth";
 import { DashboardClient } from "@/components/DashboardClient";
 import Link from "next/link";
 
 export default async function HomePage() {
-  let serverUser = null;
-  let serverError = null;
+  let serverUser: ApiUser | null = null;
+  let serverError: string | null = null;
 
   try {
-    // Server-side fetch example using serverApi
-    const response = await serverApi<MeResponse>("/auth/me");
-    if (response.success) {
+    // Server-side fetch: API returns flat { user } or nested { success, data: { user } }
+    const response = await serverApi<{ user?: ApiUser; success?: boolean; data?: { user: ApiUser } }>("/auth/me");
+    if (response?.user != null) {
+      serverUser = response.user;
+    } else if (response?.success === true && response?.data?.user != null) {
       serverUser = response.data.user;
     }
   } catch (error) {

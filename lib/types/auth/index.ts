@@ -76,12 +76,17 @@ export interface RegisterSuccessFlat {
     expires_in?: number;
 }
 
-// Auth/Me Response
+// Auth/Me Response (nested: { success, data: { user } })
 export interface MeSuccessData {
     user: ApiUser;
 }
 
 export type MeResponse = ApiResponse<MeSuccessData>;
+
+// Me response (flat: top-level user only)
+export interface MeResponseFlat {
+    user: ApiUser;
+}
 
 // Session User type (without accessToken - that's on session itself)
 export interface SessionUser {

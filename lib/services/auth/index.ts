@@ -85,10 +85,22 @@ export const register = async (
  */
 export const getMe = async (): Promise<ApiUser | null> => {
     try {
-        const response = await clientApi.get<MeResponse>("/auth/me");
+        const response = await clientApi.get<MeResponse | { user: ApiUser }>(
+            "/auth/me"
+        );
+        const data_ = response.data;
 
-        if (response.data.success) {
-            return response.data.data.user;
+        // Flat shape: { user }
+        if (data_ && typeof data_ === "object" && "user" in data_ && data_.user != null) {
+            return data_.user as ApiUser;
+        }
+
+        // Nested shape: { success, data: { user } }
+        if (data_ && "success" in data_ && data_.success === true && "data" in data_) {
+            const nested = data_ as { data: { user: ApiUser } };
+            if (nested.data?.user != null) {
+                return nested.data.user;
+            }
         }
 
         return null;

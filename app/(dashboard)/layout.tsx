@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   Package,
@@ -76,15 +77,14 @@ const DashboardLayout = ({
         <SidebarFooter className="border-t border-sidebar-border">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Çıkış yap">
-                <Link
-                  href="/api/auth/signout"
-                  aria-label="Çıkış yap"
-                  className="text-sidebar-foreground"
-                >
-                  <LogOut className="size-4" aria-hidden />
-                  <span>Çıkış Yap</span>
-                </Link>
+              <SidebarMenuButton
+                tooltip="Çıkış yap"
+                onClick={() => signOut({ callbackUrl: "/giris" })}
+                aria-label="Çıkış yap"
+                className="text-sidebar-foreground"
+              >
+                <LogOut className="size-4" aria-hidden />
+                <span>Çıkış Yap</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

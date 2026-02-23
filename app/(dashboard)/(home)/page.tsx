@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { serverApi, UnauthorizedError } from "@/lib/api";
 import type { ApiUser } from "@/lib/types/auth";
 import { DashboardClient } from "@/components/DashboardClient";
-import Link from "next/link";
+import SignOutButton from "@/components/SignOutButton";
 
 export default async function HomePage() {
   let serverUser: ApiUser | null = null;
@@ -28,14 +28,13 @@ export default async function HomePage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <Link
-            href="/api/auth/signout"
+          <SignOutButton
             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
             tabIndex={0}
             aria-label="Çıkış yap"
           >
             Çıkış Yap
-          </Link>
+          </SignOutButton>
         </div>
 
         {/* Server Component Section */}

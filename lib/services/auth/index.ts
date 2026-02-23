@@ -1,6 +1,7 @@
 import { clientApi, publicApi } from "@/lib/api";
 import type {
     RegisterResponse,
+    RegisterSuccessFlat,
     MeResponse,
     ApiUser,
     ApiErrorResponse,
@@ -16,19 +17,45 @@ export const register = async (
     data: RegisterRequest
 ): Promise<{ success: true; user: ApiUser; token: string } | { success: false; message: string; errors?: string[] }> => {
     try {
-        const response = await publicApi.post<RegisterResponse>("/auth/register", data);
+        const response = await publicApi.post<
+            RegisterResponse | RegisterSuccessFlat
+        >("/auth/register", data);
+        const isSuccessStatus = response.status === 200 || response.status === 201;
+        const data_ = response.data;
 
-        if (response.data.success) {
+        // Flat shape: { message, user, token } (e.g. 201 Created)
+        const flat = data_ as RegisterSuccessFlat;
+        if (
+            isSuccessStatus &&
+            flat?.user != null &&
+            typeof flat?.token === "string"
+        ) {
             return {
                 success: true,
-                user: response.data.data.user,
-                token: response.data.data.token,
+                user: flat.user as ApiUser,
+                token: flat.token,
             };
         }
 
+        // Nested shape: { success, data: { user, token } }
+        if (data_ && "data" in data_ && data_.data?.user != null && data_.data?.token != null) {
+            const nested = data_ as { data: { user: ApiUser; token: string } };
+            if (isSuccessStatus) {
+                return {
+                    success: true,
+                    user: nested.data.user,
+                    token: nested.data.token,
+                };
+            }
+        }
+
+        const errorMessage =
+            typeof data_ === "object" && data_ != null && "message" in data_
+                ? (data_ as { message?: string }).message
+                : undefined;
         return {
             success: false,
-            message: response.data.message,
+            message: errorMessage ?? "Kayıt sırasında bir hata oluştu",
         };
     } catch (error) {
         if (error instanceof AxiosError && error.response?.data) {

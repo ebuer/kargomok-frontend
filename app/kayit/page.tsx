@@ -11,7 +11,10 @@ import { register } from "@/lib/services/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { ZodError } from "zod";
+import { PhoneInput } from "react-international-phone";
+import "react-international-phone/style.css";
 
 export default function KayitPage() {
     const router = useRouter();
@@ -203,19 +206,33 @@ export default function KayitPage() {
                                     >
                                         Telefon
                                     </Label>
-                                    <Input
-                                        id="phone"
-                                        name="phone"
-                                        type="tel"
-                                        autoComplete="tel"
-                                        placeholder="05XX XXX XX XX"
+                                    <PhoneInput
+                                        defaultCountry="tr"
                                         value={formData.phone}
-                                        onChange={handleChange}
-                                        required
-                                        disabled={isLoading}
-                                        aria-invalid={errors.length > 0}
-                                        aria-label="Telefon"
-                                        className="h-10"
+                                        onChange={(phone) =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                phone,
+                                            }))
+                                        }
+                                        className="w-full [&_.react-international-phone-input-container]:flex [&_.react-international-phone-country-selector-button]:h-10 [&_.react-international-phone-country-selector-button]:rounded-l-md [&_.react-international-phone-country-selector-button]:border [&_.react-international-phone-country-selector-button]:border-input [&_.react-international-phone-country-selector-button]:bg-transparent"
+                                        inputClassName={cn(
+                                            "h-10 w-full min-w-0 rounded-r-md border border-input border-l-0 bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none md:text-sm",
+                                            "focus:border-ring focus:ring-ring/50 focus:ring-[3px] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
+                                            "placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+                                            errors.length > 0 &&
+                                                "border-destructive ring-destructive/20 focus-visible:ring-destructive/20"
+                                        )}
+                                        inputProps={{
+                                            id: "phone",
+                                            name: "phone",
+                                            "aria-label": "Telefon",
+                                            "aria-invalid": errors.length > 0,
+                                            required: true,
+                                            disabled: isLoading,
+                                            autoComplete: "tel",
+                                            placeholder: "5XX XXX XX XX",
+                                        }}
                                     />
                                 </div>
                             </div>

@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { LogIn } from "lucide-react";
+import { LogIn, Eye, EyeOff } from "lucide-react";
 import { loginRequestSchema, type LoginRequest } from "@/lib/schema/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ const LoginForm = () => {
     const [rememberMe, setRememberMe] = useState(false);
     const [errors, setErrors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -51,6 +52,8 @@ const LoginForm = () => {
             password: formData.password,
             redirect: false,
         });
+
+        console.log("result222", result);
 
         setIsLoading(false);
 
@@ -146,20 +149,48 @@ const LoginForm = () => {
                                 Şifremi unuttum
                             </Link>
                         </div>
-                        <Input
-                            id="password"
-                            name="password"
-                            type="password"
-                            autoComplete="current-password"
-                            placeholder="••••••••"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            disabled={isLoading}
-                            aria-invalid={errors.length > 0}
-                            aria-label="Şifre"
-                            className="h-10"
-                        />
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
+                                placeholder="••••••••"
+                                value={formData.password}
+                                onChange={handleChange}
+                                required
+                                disabled={isLoading}
+                                aria-invalid={errors.length > 0}
+                                aria-label="Şifre"
+                                className="h-10 pr-10"
+                            />
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setShowPassword((prev) => !prev)
+                                }
+                                disabled={isLoading}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
+                                aria-label={
+                                    showPassword
+                                        ? "Şifreyi gizle"
+                                        : "Şifreyi göster"
+                                }
+                                tabIndex={0}
+                            >
+                                {showPassword ? (
+                                    <EyeOff
+                                        className="size-4"
+                                        aria-hidden
+                                    />
+                                ) : (
+                                    <Eye
+                                        className="size-4"
+                                        aria-hidden
+                                    />
+                                )}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-3">

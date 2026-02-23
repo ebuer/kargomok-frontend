@@ -49,7 +49,7 @@ export interface LoginSuccessData {
 
 export type LoginResponse = ApiResponse<LoginSuccessData>;
 
-// Register Response
+// Register Response (nested: { success, data: { user, token } })
 export interface RegisterSuccessData {
     user: ApiUser;
     token: string;
@@ -57,6 +57,15 @@ export interface RegisterSuccessData {
 }
 
 export type RegisterResponse = ApiResponse<RegisterSuccessData>;
+
+// Register success response (flat: top-level user, token - e.g. status 201)
+export interface RegisterSuccessFlat {
+    message?: string;
+    user: ApiUser;
+    token: string;
+    token_type?: string;
+    expires_in?: number;
+}
 
 // Auth/Me Response
 export interface MeSuccessData {

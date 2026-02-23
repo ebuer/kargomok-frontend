@@ -5,7 +5,7 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Eye, EyeOff } from "lucide-react";
 import { registerRequestSchema, type RegisterRequest } from "@/lib/schema/auth";
 import { register } from "@/lib/services/auth";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,17 @@ export default function KayitPage() {
 
     const [formData, setFormData] = useState<RegisterRequest>({
         name: "",
+        surname: "",
         email: "",
+        phone: "",
         password: "",
         password_confirmation: "",
     });
     const [errors, setErrors] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordConfirmation, setShowPasswordConfirmation] =
+        useState(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -76,7 +81,7 @@ export default function KayitPage() {
     return (
         <div className="flex min-h-screen">
             <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
-                <div className="mx-auto w-full max-w-sm lg:w-96">
+                <div className="mx-auto w-full max-w-[450px] lg:w-[450px]">
                     <div>
                         <Link
                             href="/"
@@ -122,47 +127,97 @@ export default function KayitPage() {
                                 </div>
                             )}
 
-                            <div className="space-y-2">
-                                <Label htmlFor="name" className="text-foreground">
-                                    İsim
-                                </Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    autoComplete="name"
-                                    placeholder="Adınız Soyadınız"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={isLoading}
-                                    aria-invalid={errors.length > 0}
-                                    aria-label="İsim"
-                                    className="h-10"
-                                />
+                            <div className="grid lg:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="name" className="text-foreground">
+                                        İsim
+                                    </Label>
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        autoComplete="given-name"
+                                        placeholder="Adınız"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="İsim"
+                                        className="h-10"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="surname"
+                                        className="text-foreground"
+                                    >
+                                        Soyisim
+                                    </Label>
+                                    <Input
+                                        id="surname"
+                                        name="surname"
+                                        type="text"
+                                        autoComplete="family-name"
+                                        placeholder="Soyadınız"
+                                        value={formData.surname}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="Soyisim"
+                                        className="h-10"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="email"
-                                    className="text-foreground"
-                                >
-                                    E-posta adresi
-                                </Label>
-                                <Input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    placeholder="ornek@email.com"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={isLoading}
-                                    aria-invalid={errors.length > 0}
-                                    aria-label="E-posta adresi"
-                                    className="h-10"
-                                />
+                            <div className="grid lg:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="email"
+                                        className="text-foreground"
+                                    >
+                                        E-posta adresi
+                                    </Label>
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        autoComplete="email"
+                                        placeholder="ornek@email.com"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="E-posta adresi"
+                                        className="h-10"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label
+                                        htmlFor="phone"
+                                        className="text-foreground"
+                                    >
+                                        Telefon
+                                    </Label>
+                                    <Input
+                                        id="phone"
+                                        name="phone"
+                                        type="tel"
+                                        autoComplete="tel"
+                                        placeholder="05XX XXX XX XX"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="Telefon"
+                                        className="h-10"
+                                    />
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -172,20 +227,52 @@ export default function KayitPage() {
                                 >
                                     Şifre
                                 </Label>
-                                <Input
-                                    id="password"
-                                    name="password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={isLoading}
-                                    aria-invalid={errors.length > 0}
-                                    aria-label="Şifre"
-                                    className="h-10"
-                                />
+                                <p className="text-xs text-muted-foreground">
+                                    En az 8 karakter, bir büyük harf, bir küçük
+                                    harf ve bir sembol içermelidir.
+                                </p>
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        name="password"
+                                        type={showPassword ? "text" : "password"}
+                                        autoComplete="new-password"
+                                        placeholder={"Şifrenizi giriniz"}
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="Şifre"
+                                        className="h-10 pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPassword((prev) => !prev)
+                                        }
+                                        disabled={isLoading}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
+                                        aria-label={
+                                            showPassword
+                                                ? "Şifreyi gizle"
+                                                : "Şifreyi göster"
+                                        }
+                                        tabIndex={0}
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff
+                                                className="size-4"
+                                                aria-hidden
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className="size-4"
+                                                aria-hidden
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="space-y-2">
@@ -195,20 +282,54 @@ export default function KayitPage() {
                                 >
                                     Şifre onayı
                                 </Label>
-                                <Input
-                                    id="password_confirmation"
-                                    name="password_confirmation"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    placeholder="••••••••"
-                                    value={formData.password_confirmation}
-                                    onChange={handleChange}
-                                    required
-                                    disabled={isLoading}
-                                    aria-invalid={errors.length > 0}
-                                    aria-label="Şifre onayı"
-                                    className="h-10"
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password_confirmation"
+                                        name="password_confirmation"
+                                        type={
+                                            showPasswordConfirmation
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        autoComplete="new-password"
+                                        placeholder={"Şifreniz onayı"}
+                                        value={formData.password_confirmation}
+                                        onChange={handleChange}
+                                        required
+                                        disabled={isLoading}
+                                        aria-invalid={errors.length > 0}
+                                        aria-label="Şifre onayı"
+                                        className="h-10 pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setShowPasswordConfirmation(
+                                                (prev) => !prev
+                                            )
+                                        }
+                                        disabled={isLoading}
+                                        className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
+                                        aria-label={
+                                            showPasswordConfirmation
+                                                ? "Şifreyi gizle"
+                                                : "Şifreyi göster"
+                                        }
+                                        tabIndex={0}
+                                    >
+                                        {showPasswordConfirmation ? (
+                                            <EyeOff
+                                                className="size-4"
+                                                aria-hidden
+                                            />
+                                        ) : (
+                                            <Eye
+                                                className="size-4"
+                                                aria-hidden
+                                            />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
 
                             <Button

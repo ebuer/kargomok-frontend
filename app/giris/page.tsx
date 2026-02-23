@@ -53,8 +53,6 @@ const LoginForm = () => {
             redirect: false,
         });
 
-        console.log("result222", result);
-
         setIsLoading(false);
 
         if (result?.error) {

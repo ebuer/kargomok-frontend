@@ -40,7 +40,7 @@ export interface ApiErrorResponse {
 
 export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse;
 
-// Login Response
+// Login Response (nested: { success, data: { user, token } })
 export interface LoginSuccessData {
     user: ApiUser;
     token: string;
@@ -48,6 +48,15 @@ export interface LoginSuccessData {
 }
 
 export type LoginResponse = ApiResponse<LoginSuccessData>;
+
+// Login success response (flat: top-level user, token - e.g. 200/201)
+export interface LoginSuccessFlat {
+    message?: string;
+    user: ApiUser;
+    token: string;
+    token_type?: string;
+    expires_in?: number;
+}
 
 // Register Response (nested: { success, data: { user, token } })
 export interface RegisterSuccessData {

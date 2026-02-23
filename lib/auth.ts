@@ -1,6 +1,10 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import type { LoginResponse, ApiUser } from "@/lib/types/auth";
+import type {
+    LoginResponse,
+    LoginSuccessFlat,
+    ApiUser,
+} from "@/lib/types/auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -30,25 +34,50 @@ export const authOptions: NextAuthOptions = {
                         }),
                     });
 
-                    const data: LoginResponse = await response.json();
+                    const data = await response.json();
+                    const isSuccessStatus =
+                        response.ok && (response.status === 200 || response.status === 201);
 
-                    if (!data.success) {
-                        throw new Error(data.message || "Giriş başarısız");
+                    // Flat shape: { message, user, token }
+                    const flat = data as LoginSuccessFlat;
+                    if (
+                        isSuccessStatus &&
+                        flat?.user != null &&
+                        typeof flat?.token === "string"
+                    ) {
+                        const apiUser = flat.user as ApiUser;
+                        return {
+                            id: String(apiUser.id),
+                            name: apiUser.name,
+                            email: apiUser.email,
+                            image: apiUser.avatar ?? null,
+                            type: apiUser.type ?? "user",
+                            status: apiUser.status ?? "active",
+                            accessToken: flat.token,
+                        };
                     }
 
-                    const apiUser: ApiUser = data.data.user;
-                    const token = data.data.token;
+                    // Nested shape: { success, data: { user, token } }
+                    const nested = data as LoginResponse;
+                    if (nested?.success === true && nested?.data?.user != null && nested?.data?.token != null) {
+                        const apiUser = nested.data.user;
+                        const token = nested.data.token;
+                        return {
+                            id: String(apiUser.id),
+                            name: apiUser.name,
+                            email: apiUser.email,
+                            image: apiUser.avatar ?? null,
+                            type: apiUser.type ?? "user",
+                            status: apiUser.status ?? "active",
+                            accessToken: token,
+                        };
+                    }
 
-                    // Return user object that will be passed to JWT callback
-                    return {
-                        id: String(apiUser.id),
-                        name: apiUser.name,
-                        email: apiUser.email,
-                        image: apiUser.avatar,
-                        type: apiUser.type,
-                        status: apiUser.status,
-                        accessToken: token,
-                    };
+                    throw new Error(
+                        (data?.message && typeof data.message === "string"
+                            ? data.message
+                            : null) || "Giriş başarısız"
+                    );
                 } catch (error) {
                     if (error instanceof Error) {
                         throw new Error(error.message);
